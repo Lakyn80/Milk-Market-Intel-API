@@ -10,8 +10,8 @@ class Company(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(255), unique=True, index=True)
-    country: Mapped[str | None] = mapped_column(String(50))
-    region: Mapped[str | None] = mapped_column(String(100))
+    country: Mapped[str] = mapped_column(String(100))
+    region: Mapped[str | None] = mapped_column(String(150))
     website: Mapped[str | None] = mapped_column(String(255))
 
     brands: Mapped[list["Brand"]] = relationship(back_populates="company")
@@ -32,26 +32,16 @@ class Brand(Base):
     )
 
 
-class Market(Base):
-    __tablename__ = "markets"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(100), unique=True)
-    country: Mapped[str] = mapped_column(String(50))
-
-    prices: Mapped[list["Price"]] = relationship(back_populates="market")
-
-
 class Product(Base):
     __tablename__ = "products"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(255), index=True)
-    brand_id: Mapped[int] = mapped_column(ForeignKey("brands.id"))
 
-    weight: Mapped[float | None] = mapped_column(Float)
-    unit: Mapped[str | None] = mapped_column(String(20))
-    package_type: Mapped[str | None] = mapped_column(String(50))
+    volume_liters: Mapped[float | None] = mapped_column(Float)
+    fat_percent: Mapped[float | None] = mapped_column(Float)
+
+    brand_id: Mapped[int] = mapped_column(ForeignKey("brands.id"))
 
     brand: Mapped["Brand"] = relationship(back_populates="products")
     prices: Mapped[list["Price"]] = relationship(back_populates="product")
@@ -61,16 +51,24 @@ class Price(Base):
     __tablename__ = "prices"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    product_id: Mapped[int] = mapped_column(ForeignKey("products.id"))
-    market_id: Mapped[int] = mapped_column(ForeignKey("markets.id"))
-
     value: Mapped[float] = mapped_column(Float)
     currency: Mapped[str] = mapped_column(String(10))
-    collected_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow, index=True
+
+    source: Mapped[str] = mapped_column(String(255))
+    region: Mapped[str | None] = mapped_column(String(150))
+
+    scraped_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow
     )
 
-    source_url: Mapped[str | None] = mapped_column(String(500))
+    product_id: Mapped[int] = mapped_column(ForeignKey("products.id"))
 
     product: Mapped["Product"] = relationship(back_populates="prices")
-    market: Mapped["Market"] = relationship(back_populates="prices")
+
+
+class Market(Base):
+    __tablename__ = "markets"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(100), unique=True)
+    country: Mapped[str] = mapped_column(String(50))
