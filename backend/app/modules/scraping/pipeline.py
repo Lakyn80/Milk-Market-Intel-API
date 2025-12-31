@@ -1,10 +1,10 @@
-from typing import Iterable, Dict, Any
-from app.modules.scraping.providers.provider_base import ProviderBase
+﻿from app.modules.scraping.providers.factory import get_provider
 
 
 class ScrapingPipeline:
-    def __init__(self, provider: ProviderBase):
-        self.provider = provider
+    def __init__(self):
+        self.provider = get_provider()
 
-    def find_companies(self, query: str) -> Iterable[Dict[str, Any]]:
-        return self.provider.search_companies(query)
+    def run(self) -> list[dict]:
+        companies = self.provider.fetch_companies()
+        return companies
