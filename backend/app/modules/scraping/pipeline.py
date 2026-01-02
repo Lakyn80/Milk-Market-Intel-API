@@ -34,7 +34,7 @@ class ScrapingPipeline:
                 continue
 
             canonical = canonical_company_name(name)
-            key = (canonical, item.get("region"))
+            key = (canonical, item.get("region", ""))
 
             weight, unit = normalize_weight(
                 item.get("weight"),
