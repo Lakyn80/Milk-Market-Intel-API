@@ -1,14 +1,13 @@
 import os
 
-from app.modules.scraping.providers.provider_base import ProviderBase
 from app.modules.scraping.providers.local import LocalProvider
-from app.modules.scraping.providers.brightdata import BrightDataProvider
+from app.modules.scraping.providers.two_gis import TwoGisProvider
 
 
-def get_provider() -> ProviderBase:
-    provider = os.getenv("SCRAPING_PROVIDER", "local").lower()
+def get_provider():
+    provider = os.environ.get("SCRAPING_PROVIDER", "local").lower()
 
-    if provider == "brightdata":
-        return BrightDataProvider()
+    if provider == "2gis":
+        return TwoGisProvider()
 
     return LocalProvider()

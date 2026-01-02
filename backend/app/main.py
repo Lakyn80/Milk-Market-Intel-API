@@ -1,11 +1,13 @@
 from fastapi import FastAPI
+from dotenv import load_dotenv
 
 from .router import api_router
 from .db.base import Base
 from .db.session import engine
-
-# IMPORT MODELS (nutné pro create_all)
 from .modules.companies.models import Company  # noqa: F401
+
+
+load_dotenv()
 
 
 app = FastAPI(
