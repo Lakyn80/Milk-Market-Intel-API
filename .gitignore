@@ -11,6 +11,10 @@ __pycache__/
 node_modules/
 dist/
 
+# Local data outputs (scraped artifacts, local DB)
+backend/data/*.json
+backend/app.db
+
 # Docker / logs
 *.log
 
