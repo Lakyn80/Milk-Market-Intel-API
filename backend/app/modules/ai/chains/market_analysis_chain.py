@@ -33,7 +33,7 @@ def build_chain(model: str | None = None, temperature: float = 0.2):
             "question": question,
         }
         human = HumanMessage(content=str(user_payload))
-        resp = llm([system, human])
+        resp = llm.invoke([system, human])
         return resp.content
 
     return run
