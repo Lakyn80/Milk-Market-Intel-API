@@ -1,6 +1,6 @@
 import Plot from "react-plotly.js";
 
-function PriceDistributionChart({ data }) {
+function PriceDistributionChart({ data, title }) {
   if (!data || data.length === 0) return null;
 
   const prices = data
@@ -8,8 +8,8 @@ function PriceDistributionChart({ data }) {
     .filter((v) => Number.isFinite(v));
 
   return (
-    <div className="card">
-      <h3 className="chart-title">Distribuce cen (histogram)</h3>
+    <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-4 shadow">
+      <h3 className="text-base font-semibold text-slate-100 mb-2">{title}</h3>
       <Plot
         data={[
           {

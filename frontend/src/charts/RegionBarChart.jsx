@@ -1,14 +1,14 @@
 import Plot from "react-plotly.js";
 
-function RegionBarChart({ data }) {
+function RegionBarChart({ data, title }) {
   if (!data || data.length === 0) return null;
 
   const regions = data.map((row) => row.region ?? "UNKNOWN");
   const counts = data.map((row) => Number(row.product_count) || 0);
 
   return (
-    <div className="card">
-      <h3 className="chart-title">Produkty podle regionu</h3>
+    <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-4 shadow">
+      <h3 className="text-base font-semibold text-slate-100 mb-2">{title}</h3>
       <Plot
         data={[
           {
