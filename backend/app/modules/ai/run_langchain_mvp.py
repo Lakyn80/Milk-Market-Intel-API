@@ -1,5 +1,7 @@
 import argparse
 
+from dotenv import load_dotenv
+
 from app.modules.ai.chains.market_analysis_chain import build_chain
 from app.modules.ai.loaders.analytics_loader import load_analytics
 
@@ -13,6 +15,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
+    load_dotenv()
     args = parse_args()
     data = load_analytics()
     chain = build_chain(model=args.model, temperature=0.2)
