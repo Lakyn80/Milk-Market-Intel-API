@@ -10,5 +10,11 @@ export default defineConfig({
       // allow reading analytics files from the backend folder
       allow: [resolve(__dirname, "..")],
     },
+    proxy: {
+      "/api": {
+        target: "http://localhost:8000",
+        changeOrigin: true,
+      },
+    },
   },
 });
