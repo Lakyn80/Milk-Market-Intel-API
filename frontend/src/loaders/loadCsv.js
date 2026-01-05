@@ -1,8 +1,7 @@
 import Papa from "papaparse";
 
 export async function loadCsv(relativePath) {
-  const url = new URL(relativePath, import.meta.url).toString();
-  const response = await fetch(url);
+  const response = await fetch(relativePath);
   if (!response.ok) {
     throw new Error(`Failed to load CSV: ${relativePath}`);
   }

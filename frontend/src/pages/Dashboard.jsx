@@ -5,8 +5,9 @@ import RegionBarChart from "../charts/RegionBarChart.jsx";
 import KpiCards from "../components/KpiCards.jsx";
 import { loadCsv } from "../loaders/loadCsv.js";
 import { loadJson } from "../loaders/loadJson.js";
+import { exportCsv, exportJson } from "../reports/exporters.js";
 
-const BASE = "../../../backend/data/analytics";
+const BASE = "/data/analytics";
 
 const PATHS = {
   overview: `${BASE}/overview_metrics.json`,
@@ -29,6 +30,11 @@ const LABELS = {
       categories: "Průměrná cena podle kategorie",
       distribution: "Distribuce cen (histogram)",
     },
+    exports: {
+      title: "Export reportů",
+      csv: "Export CSV",
+      json: "Export JSON",
+    },
     error: "Chyba načítání dat",
   },
   en: {
@@ -44,6 +50,11 @@ const LABELS = {
       categories: "Average price by category",
       distribution: "Price distribution (histogram)",
     },
+    exports: {
+      title: "Export reports",
+      csv: "Export CSV",
+      json: "Export JSON",
+    },
     error: "Data load failed",
   },
   ru: {
@@ -58,6 +69,11 @@ const LABELS = {
       regions: "Товары по регионам",
       categories: "Средняя цена по категориям",
       distribution: "Распределение цен (гистограмма)",
+    },
+    exports: {
+      title: "Экспорт отчётов",
+      csv: "Экспорт CSV",
+      json: "Экспорт JSON",
     },
     error: "Ошибка загрузки данных",
   },
@@ -109,14 +125,48 @@ function Dashboard({ lang }) {
         </h3>
         <KpiCards metrics={overview} labels={labels.kpis} locale={lang} />
       </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <RegionBarChart data={regionData} title={labels.charts.regions} />
         <CategoryBarChart data={categoryData} title={labels.charts.categories} />
       </div>
+
       <PriceDistributionChart
         data={distributionData}
         title={labels.charts.distribution}
       />
+
+      <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-4 shadow">
+        <h3 className="text-base font-semibold text-slate-100 mb-3">
+          {labels.exports.title}
+        </h3>
+        <div className="flex flex-wrap gap-3">
+          <button
+            className="rounded border border-slate-700 px-3 py-2 text-sm text-slate-100 hover:border-slate-500"
+            onClick={() => exportCsv(PATHS.region, "region_summary.csv")}
+          >
+            {labels.exports.csv} (Region)
+          </button>
+          <button
+            className="rounded border border-slate-700 px-3 py-2 text-sm text-slate-100 hover:border-slate-500"
+            onClick={() => exportCsv(PATHS.category, "category_summary.csv")}
+          >
+            {labels.exports.csv} (Category)
+          </button>
+          <button
+            className="rounded border border-slate-700 px-3 py-2 text-sm text-slate-100 hover:border-slate-500"
+            onClick={() => exportCsv(PATHS.distribution, "price_distribution.csv")}
+          >
+            {labels.exports.csv} (Prices)
+          </button>
+          <button
+            className="rounded border border-slate-700 px-3 py-2 text-sm text-slate-100 hover:border-slate-500"
+            onClick={() => exportJson(PATHS.overview, "overview_metrics.json")}
+          >
+            {labels.exports.json}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
