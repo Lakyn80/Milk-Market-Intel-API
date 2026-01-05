@@ -1,15 +1,87 @@
-﻿name,federal_district,center_lat,center_lon
+name,federal_district,center_lat,center_lon
 Moscow,Central,55.7558,37.6173
 Moscow Oblast,Central,55.5043,38.0354
+Belgorod Oblast,Central,50.5997,36.5983
+Bryansk Oblast,Central,53.2425,34.3661
+Vladimir Oblast,Central,56.1291,40.4070
+Voronezh Oblast,Central,51.6608,39.2003
+Ivanovo Oblast,Central,56.9994,40.9739
+Kaluga Oblast,Central,54.5138,36.2612
+Kostroma Oblast,Central,57.7679,40.9269
+Kursk Oblast,Central,51.7308,36.1930
+Lipetsk Oblast,Central,52.6100,39.5940
+Orel Oblast,Central,52.9673,36.0696
+Ryazan Oblast,Central,54.6292,39.7364
+Smolensk Oblast,Central,54.7826,32.0453
+Tambov Oblast,Central,52.7212,41.4523
+Tver Oblast,Central,56.8587,35.9176
+Tula Oblast,Central,54.1931,37.6170
+Yaroslavl Oblast,Central,57.6264,39.8938
 Saint Petersburg,Northwestern,59.9311,30.3609
 Leningrad Oblast,Northwestern,59.9398,30.3146
+Karelia Republic,Northwestern,61.7850,34.3469
+Komi Republic,Northwestern,61.6688,50.8358
+Arkhangelsk Oblast,Northwestern,64.5399,40.5153
+Nenets Autonomous Okrug,Northwestern,67.6380,53.0060
+Vologda Oblast,Northwestern,59.2205,39.8915
+Kaliningrad Oblast,Northwestern,54.7104,20.4522
+Murmansk Oblast,Northwestern,68.9585,33.0827
+Novgorod Oblast,Northwestern,58.5228,31.2698
+Pskov Oblast,Northwestern,57.8194,28.3317
 Republic of Tatarstan,Volga,55.7903,49.1120
+Republic of Bashkortostan,Volga,54.7348,55.9579
+Chuvash Republic,Volga,56.1322,47.2519
+Mari El Republic,Volga,56.6344,47.8998
+Mordovia Republic,Volga,54.1806,45.1866
+Udmurt Republic,Volga,56.8527,53.2045
+Kirov Oblast,Volga,58.6036,49.6680
+Nizhny Novgorod Oblast,Volga,56.2965,43.9361
+Orenburg Oblast,Volga,51.7875,55.1019
+Penza Oblast,Volga,53.1959,45.0178
+Perm Krai,Volga,58.0105,56.2502
+Samara Oblast,Volga,53.1959,50.1008
+Saratov Oblast,Volga,51.5300,45.9521
+Ulyanovsk Oblast,Volga,54.3170,48.4022
 Krasnodar Krai,Southern,45.0355,38.9753
+Stavropol Krai,Southern,45.0445,41.9691
+Adygea Republic,Southern,44.6098,40.1007
+Kalmykia Republic,Southern,46.3078,44.2696
+Crimea Republic,Southern,44.9521,34.1024
+Sevastopol,Southern,44.6167,33.5254
+Astrakhan Oblast,Southern,46.3497,48.0408
+Volgograd Oblast,Southern,48.7080,44.5133
 Rostov Oblast,Southern,47.2357,39.7015
-Sverdlovsk Oblast,Ural,56.8389,60.6057
-Novosibirsk Oblast,Siberian,55.0084,82.9357
-Irkutsk Oblast,Siberian,52.2871,104.2810
+Dagestan Republic,North Caucasian,42.9849,47.5047
+Ingushetia Republic,North Caucasian,43.1688,44.8169
+Kabardino-Balkar Republic,North Caucasian,43.4853,43.6071
+Karachay-Cherkess Republic,North Caucasian,43.9098,41.8769
+Republic of North Ossetia-Alania,North Caucasian,43.0205,44.6812
+Chechen Republic,North Caucasian,43.3178,45.6983
+Stavropol Krai,North Caucasian,45.0445,41.9691
 Krasnoyarsk Krai,Siberian,56.0153,92.8932
+Irkutsk Oblast,Siberian,52.2871,104.2810
+Kemerovo Oblast,Siberian,55.3907,86.0468
+Novosibirsk Oblast,Siberian,55.0084,82.9357
+Omsk Oblast,Siberian,54.9893,73.3682
+Tomsk Oblast,Siberian,56.4847,84.9479
+Altai Krai,Siberian,53.3474,83.7784
+Altai Republic,Siberian,51.9580,85.9602
+Tyva Republic,Siberian,51.7191,94.4377
+Khakassia Republic,Siberian,53.7212,91.4424
+Zabaykalsky Krai,Siberian,52.0340,113.4994
+Sakha (Yakutia) Republic,Far Eastern,62.0355,129.6755
 Primorsky Krai,Far Eastern,43.1155,131.8855
 Khabarovsk Krai,Far Eastern,48.4802,135.0719
-Republic of Sakha (Yakutia),Far Eastern,62.0355,129.6755
+Amur Oblast,Far Eastern,50.2728,127.5406
+Kamchatka Krai,Far Eastern,53.0370,158.6559
+Magadan Oblast,Far Eastern,59.5682,150.8085
+Sakhalin Oblast,Far Eastern,46.9592,142.7380
+Jewish Autonomous Oblast,Far Eastern,48.7946,132.9218
+Chukotka Autonomous Okrug,Far Eastern,64.7337,177.5089
+Tyumen Oblast,Ural,57.1530,65.5343
+Yamalo-Nenets Autonomous Okrug,Ural,66.5337,66.6141
+Khanty-Mansi Autonomous Okrug,Ural,61.0022,69.0189
+Chelyabinsk Oblast,Ural,55.1644,61.4368
+Sverdlovsk Oblast,Ural,56.8389,60.6057
+Kurgan Oblast,Ural,55.4545,65.3289
+Buryatia Republic,Far Eastern,51.8345,107.5849

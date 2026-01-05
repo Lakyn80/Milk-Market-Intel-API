@@ -80,6 +80,38 @@ class YandexMarketCatalogProvider:
                 "price_currency": None,
             }
 
+            def process_dict(inner: Dict[str, object]) -> None:
+                if inner.get("productId") and not product["product_id"]:
+                    product["product_id"] = str(inner.get("productId"))
+                if inner.get("skuId") and not product["sku_id"]:
+                    product["sku_id"] = str(inner.get("skuId"))
+                if inner.get("offerId") and not product["offer_id"]:
+                    product["offer_id"] = str(inner.get("offerId"))
+                if inner.get("title") and not product["name"]:
+                    product["name"] = str(inner.get("title"))
+
+                # Vendor/brand fields appear sporadically.
+                for key in ("brand", "brandName", "vendorName", "vendor", "manufacturer"):
+                    if inner.get(key) and not product["brand"]:
+                        product["brand"] = str(inner.get(key))
+
+                if inner.get("price") and product["price_value"] is None:
+                    price_val = self._parse_price(inner.get("price"))
+                    if price_val is not None:
+                        product["price_value"] = price_val
+                        product["price_currency"] = str(
+                            inner.get("price", {}).get("currency") or "RUB"
+                        ).replace("RUR", "RUB")
+
+            def walk(obj: object) -> None:
+                if isinstance(obj, dict):
+                    process_dict(obj)
+                    for v in obj.values():
+                        walk(v)
+                elif isinstance(obj, list):
+                    for v in obj:
+                        walk(v)
+
             for nf in snip.find_all("noframes"):
                 try:
                     data = json.loads(nf.get_text(strip=False))
@@ -87,34 +119,7 @@ class YandexMarketCatalogProvider:
                     continue
 
                 for widget_payload in (data.get("widgets") or {}).values():
-                    if not isinstance(widget_payload, dict):
-                        continue
-                    # Each widget payload is a dict keyed by a dynamic path.
-                    inner = next(iter(widget_payload.values()), {})
-                    if not isinstance(inner, dict):
-                        continue
-
-                    if inner.get("productId") and not product["product_id"]:
-                        product["product_id"] = str(inner.get("productId"))
-                    if inner.get("skuId") and not product["sku_id"]:
-                        product["sku_id"] = str(inner.get("skuId"))
-                    if inner.get("offerId") and not product["offer_id"]:
-                        product["offer_id"] = str(inner.get("offerId"))
-                    if inner.get("title") and not product["name"]:
-                        product["name"] = str(inner.get("title"))
-
-                    # Vendor/brand fields appear sporadically.
-                    for key in ("brand", "vendorName", "vendor", "manufacturer"):
-                        if inner.get(key) and not product["brand"]:
-                            product["brand"] = str(inner.get(key))
-
-                    if inner.get("price") and product["price_value"] is None:
-                        price_val = self._parse_price(inner.get("price"))
-                        if price_val is not None:
-                            product["price_value"] = price_val
-                            product["price_currency"] = str(
-                                inner.get("price", {}).get("currency") or "RUB"
-                            ).replace("RUR", "RUB")
+                    walk(widget_payload)
 
             if product["name"]:
                 products.append(product)

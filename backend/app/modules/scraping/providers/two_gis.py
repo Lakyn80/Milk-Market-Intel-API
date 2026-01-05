@@ -21,6 +21,37 @@ def _get_first_website(item: Dict[str, Any]) -> Optional[str]:
     return None
 
 
+def _get_first_phone(item: Dict[str, Any]) -> Optional[str]:
+    for cg in item.get("contact_groups", []) or []:
+        for c in cg.get("contacts", []) or []:
+            if (c.get("type") or "").lower() == "phone":
+                values = c.get("value")
+                if isinstance(values, list) and values:
+                    return str(values[0])
+                if isinstance(values, str) and values:
+                    return values
+    return None
+
+
+def _get_point(item: Dict[str, Any]) -> tuple[Optional[float], Optional[float]]:
+    p = item.get("point") or {}
+    lat = p.get("lat")
+    lon = p.get("lon")
+    try:
+        lat = float(lat) if lat is not None else None
+        lon = float(lon) if lon is not None else None
+    except Exception:
+        lat = lon = None
+    return lat, lon
+
+
+def _get_address(item: Dict[str, Any]) -> Optional[str]:
+    addr = item.get("address_name") or item.get("full_name")
+    if addr:
+        return str(addr)
+    return None
+
+
 class TwoGisProvider(ProviderBase):
     """
     2GIS Places API provider (B2B discovery).
@@ -103,13 +134,23 @@ class TwoGisProvider(ProviderBase):
                         continue
 
                     website = _get_first_website(it)
+                    phone = _get_first_phone(it)
+                    lat, lon = _get_point(it)
+                    address = _get_address(it)
+                    external_id = it.get("id")
 
                     results.append(
                         {
+                            "external_id": str(external_id) if external_id else None,
                             "name": str(name),
                             "country": self.country,
                             "region": self.region,
+                            "address": address,
+                            "lat": lat,
+                            "lon": lon,
                             "website": website,
+                            "phone": phone,
+                            "query": self.query,
                             "price_value": None,
                             "price_currency": None,
                         }
