@@ -1,5 +1,5 @@
 import os
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain.schema import HumanMessage, SystemMessage
 
 from app.modules.ai.prompts.market_prompts import PROMPTS
