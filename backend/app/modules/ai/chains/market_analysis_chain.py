@@ -6,15 +6,16 @@ from app.modules.ai.prompts.market_prompts import PROMPTS
 
 
 def _make_llm(model: str | None = None, temperature: float = 0.2):
-    api_key = os.getenv("DEEPSEEK_API_KEY") or os.getenv("OPENAI_API_KEY")
-    base_url = os.getenv("DEEPSEEK_API_BASE")
-    model_name = model or os.getenv("OPENAI_MODEL") or "gpt-3.5-turbo"
+    api_key = os.getenv("DEEPSEEK_API_KEY")
+    if not api_key:
+        raise RuntimeError("DEEPSEEK_API_KEY is required")
+
+    base_url = os.getenv("DEEPSEEK_API_BASE", "https://api.deepseek.com")
+    model_name = model or os.getenv("DEEPSEEK_MODEL") or "deepseek-chat"
 
     kwargs = {"model": model_name, "temperature": temperature}
-    if api_key:
-        kwargs["api_key"] = api_key
-    if base_url:
-        kwargs["base_url"] = base_url
+    kwargs["api_key"] = api_key
+    kwargs["base_url"] = base_url
     return ChatOpenAI(**kwargs)
 
 
