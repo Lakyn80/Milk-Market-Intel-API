@@ -6,6 +6,7 @@ import KpiCards from "../components/KpiCards.jsx";
 import { loadCsv } from "../loaders/loadCsv.js";
 import { loadJson } from "../loaders/loadJson.js";
 import { exportCsv, exportJson } from "../reports/exporters.js";
+import AiAskBox from "../components/AiAskBox.jsx";
 
 const BASE = "/data/analytics";
 
@@ -36,6 +37,14 @@ const LABELS = {
       json: "Export JSON",
     },
     error: "Chyba načítání dat",
+    ai: {
+      title: "AI analýza trhu",
+      subtitle: "Zeptej se na předpočítanou analytiku. Model pouze interpretuje existující data.",
+      placeholder: "např. Které regiony mají nejvíce produktů?",
+      submit: "Zeptat se AI",
+      loading: "Pracuji...",
+      error: "Chyba",
+    },
   },
   en: {
     headline: "Key metrics",
@@ -56,6 +65,14 @@ const LABELS = {
       json: "Export JSON",
     },
     error: "Data load failed",
+    ai: {
+      title: "AI market analysis",
+      subtitle: "Ask a question about the precomputed analytics. The model will only interpret existing data.",
+      placeholder: "e.g., Which regions have the highest product counts?",
+      submit: "Ask AI",
+      loading: "Working...",
+      error: "Error",
+    },
   },
   ru: {
     headline: "Ключевые метрики",
@@ -76,6 +93,14 @@ const LABELS = {
       json: "Экспорт JSON",
     },
     error: "Ошибка загрузки данных",
+    ai: {
+      title: "AI анализ рынка",
+      subtitle: "Задай вопрос по готовой аналитике. Модель только интерпретирует уже посчитанные данные.",
+      placeholder: "например: Какие регионы лидируют по числу товаров?",
+      submit: "Спросить ИИ",
+      loading: "Думаю...",
+      error: "Ошибка",
+    },
   },
 };
 
@@ -167,6 +192,8 @@ function Dashboard({ lang }) {
           </button>
         </div>
       </div>
+
+      <AiAskBox labels={labels.ai} />
     </div>
   );
 }

@@ -1,18 +1,37 @@
+import os
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import HumanMessage, SystemMessage
 
 from app.modules.ai.prompts.market_prompts import PROMPTS
 
 
-def build_chain(model_name: str = "gpt-3.5-turbo", temperature: float = 0.2):
-    llm = ChatOpenAI(model=model_name, temperature=temperature)
+def _make_llm(model: str | None = None, temperature: float = 0.2):
+    api_key = os.getenv("DEEPSEEK_API_KEY") or os.getenv("OPENAI_API_KEY")
+    base_url = os.getenv("DEEPSEEK_API_BASE")
+    model_name = model or os.getenv("OPENAI_MODEL") or "gpt-3.5-turbo"
+
+    kwargs = {"model": model_name, "temperature": temperature}
+    if api_key:
+        kwargs["api_key"] = api_key
+    if base_url:
+        kwargs["base_url"] = base_url
+    return ChatOpenAI(**kwargs)
+
+
+def build_chain(model: str | None = None, temperature: float = 0.2):
+    llm = _make_llm(model=model, temperature=temperature)
 
     def run(analytics: dict, question: str, lang: str = "cs") -> str:
-        prompt = PROMPTS.get(lang, PROMPTS["en"])
-        system = SystemMessage(content=prompt)
-        # We pass analytics dict as-is; LLM must not recalc, only interpret.
-        user_content = f"Analytics data:\n{analytics}\n\nQuestion:\n{question}"
-        human = HumanMessage(content=user_content)
+        system_prompt = PROMPTS.get(lang, PROMPTS["en"])
+        system = SystemMessage(content=system_prompt)
+        user_payload = {
+            "overview": analytics.get("overview"),
+            "regions": analytics.get("regions"),
+            "categories": analytics.get("categories"),
+            "prices": analytics.get("prices"),
+            "question": question,
+        }
+        human = HumanMessage(content=str(user_payload))
         resp = llm([system, human])
         return resp.content
 
