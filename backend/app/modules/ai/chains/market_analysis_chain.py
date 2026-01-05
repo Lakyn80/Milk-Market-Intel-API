@@ -38,6 +38,7 @@ def build_chain(model: str | None = None, temperature: float = 0.2):
             "categories_total": len(categories),
             "prices_sample": prices[:50],
             "prices_total": len(prices),
+            "currency": "RUB",
             "question": question,
         }
         human = HumanMessage(content=str(user_payload))
