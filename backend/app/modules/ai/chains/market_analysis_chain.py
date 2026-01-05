@@ -25,11 +25,19 @@ def build_chain(model: str | None = None, temperature: float = 0.2):
     def run(analytics: dict, question: str, lang: str = "cs") -> str:
         system_prompt = PROMPTS.get(lang, PROMPTS["en"])
         system = SystemMessage(content=system_prompt)
+        regions = analytics.get("regions") or []
+        categories = analytics.get("categories") or []
+        prices = analytics.get("prices") or []
+
+        # Limit payload size to avoid context overflow
         user_payload = {
             "overview": analytics.get("overview"),
-            "regions": analytics.get("regions"),
-            "categories": analytics.get("categories"),
-            "prices": analytics.get("prices"),
+            "regions": regions[:50],
+            "regions_total": len(regions),
+            "categories": categories[:50],
+            "categories_total": len(categories),
+            "prices_sample": prices[:50],
+            "prices_total": len(prices),
             "question": question,
         }
         human = HumanMessage(content=str(user_payload))
