@@ -1,6 +1,6 @@
 import { Fragment, useState } from "react";
 import { Listbox, Transition } from "@headlessui/react";
-import { Globe2, ChevronUpDown } from "lucide-react";
+import { Globe2, ChevronsUpDown } from "lucide-react";
 import Dashboard from "./pages/Dashboard.jsx";
 import PageLayout from "./components/layout/PageLayout.jsx";
 
@@ -55,7 +55,7 @@ function App() {
                   {LANG_OPTIONS.find((o) => o.code === lang)?.label || lang.toUpperCase()}
                 </span>
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-slate-400">
-                  <ChevronUpDown size={16} />
+                  <ChevronsUpDown size={16} />
                 </span>
               </Listbox.Button>
               <Transition
