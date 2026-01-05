@@ -19,6 +19,8 @@ backend/data/analytics/
 backend/app/data/analytics/
 backend/app/data/*.csv
 backend/yandex_sample.html
+ui/node_modules/
+ui/dist/
 
 # Docker / logs
 *.log
