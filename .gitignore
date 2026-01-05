@@ -15,6 +15,10 @@ dist/
 backend/data/*.json
 backend/app.db
 backend/app/exports/
+backend/data/analytics/
+backend/app/data/analytics/
+backend/app/data/*.csv
+backend/yandex_sample.html
 
 # Docker / logs
 *.log
