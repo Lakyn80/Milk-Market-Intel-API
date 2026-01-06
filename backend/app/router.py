@@ -11,9 +11,17 @@ except ImportError:
     ai_router = None
     logging.getLogger(__name__).warning("AI router disabled: langchain/openai not installed")
 
+try:
+    from app.modules.ai.api.report_router import router as report_router
+except ImportError:
+    report_router = None
+    logging.getLogger(__name__).warning("Report router disabled: langchain/openai not installed")
+
 api_router = APIRouter()
 
 api_router.include_router(health_router, prefix="/api/v1")
 api_router.include_router(companies_router, prefix="/api/v1")
 if ai_router:
     api_router.include_router(ai_router, prefix="/api/v1")
+if report_router:
+    api_router.include_router(report_router, prefix="/api/v1")
