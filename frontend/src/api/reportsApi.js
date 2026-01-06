@@ -1,6 +1,6 @@
 const API_URL = "/api/v1/reports/build";
 
-export async function buildReport(payload, { timeoutMs = 20000 } = {}) {
+export async function buildReport(payload, { timeoutMs = 60000 } = {}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
