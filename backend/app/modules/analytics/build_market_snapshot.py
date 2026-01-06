@@ -12,53 +12,45 @@ from app.modules.companies.models_discovered import CompanyDiscovered
 from app.modules.regions.models import Region
 
 
-def normalize_region(value) -> str | None:
+def normalize_name(value) -> str | None:
     if value is None:
         return None
     s = str(value).strip()
     if not s:
         return None
-    s_lower = s.lower()
-    # Moscow variants
-    if s_lower in {"213", "moscow", "москва"}:
-        return "Moscow"
-    if s_lower in {"moscow oblast", "moscow region"}:
-        return "Moscow Oblast"
-
-    # If numeric lr, leave as-is
-    if s_lower.isdigit():
-        return s
-
-    # Title-case other regions
     s = re.sub(r"\\s+", " ", s)
-    return s.title()
+    return s
 
 
-def region_code(value) -> str | None:
+def build_region_maps(db):
+    code_to_name = {}
+    name_to_code = {}
+    stmt = select(Region.id, Region.name)
+    for region_id, name in db.execute(stmt):
+        norm_name = normalize_name(name)
+        if not norm_name:
+            continue
+        code = str(region_id)
+        code_to_name[code] = norm_name
+        name_to_code[norm_name.lower()] = code
+    return code_to_name, name_to_code
+
+
+def resolve_region(value, code_to_name, name_to_code):
     if value is None:
-        return None
-    s = str(value).strip().lower()
-    if not s:
-        return None
-    if s.isdigit():
-        return s
-    if s in {"moscow", "москва"}:
-        return "213"
-    if s in {"moscow oblast", "moscow region"}:
-        return "50"
-    if s in {"saint petersburg", "санкт-петербург", "st. petersburg"}:
-        return "2"
-    return None
-
-
-def build_region_lookup(db) -> set[str]:
-    stmt = select(Region.name)
-    regions = set()
-    for (name,) in db.execute(stmt):
-        norm = normalize_region(name)
-        if norm:
-            regions.add(norm)
-    return regions
+        return None, None
+    raw = str(value).strip()
+    if not raw:
+        return None, None
+    # numeric code
+    if raw.isdigit() and raw in code_to_name:
+        name = code_to_name[raw]
+        return name, raw
+    norm = normalize_name(raw)
+    if not norm:
+        return None, None
+    code = name_to_code.get(norm.lower())
+    return norm, code
 
 
 def build_company_counts(db) -> dict[str, int]:
@@ -66,9 +58,9 @@ def build_company_counts(db) -> dict[str, int]:
     stmt = select(CompanyDiscovered.region, func.count(func.distinct(CompanyDiscovered.id)))
     stmt = stmt.group_by(CompanyDiscovered.region)
     for region, cnt in db.execute(stmt):
-        region_norm = normalize_region(region)
-        if region_norm:
-            counts[region_norm] += cnt
+        norm = normalize_name(region)
+        if norm:
+            counts[norm] += cnt
     return counts
 
 
@@ -77,8 +69,8 @@ def main() -> None:
         # rebuild snapshot: delete all rows
         db.execute(delete(market_snapshot))
 
+        code_to_name, name_to_code = build_region_maps(db)
         company_counts = build_company_counts(db)
-        region_lookup = build_region_lookup(db)
 
         j = join(retail_products_parsed, retail_offers, retail_products_parsed.c.retail_offer_id == retail_offers.c.id)
         stmt = select(
@@ -95,13 +87,8 @@ def main() -> None:
 
         to_insert = []
         for row in rows:
-            region_norm = normalize_region(row.get("region"))
-            reg_code = region_code(row.get("region")) or region_code(region_norm)
-            if not reg_code and region_norm:
-                # If region exists in lookup, use normalized name as code surrogate
-                if region_norm in region_lookup:
-                    reg_code = region_norm
-            count = company_counts.get(region_norm, 0) if region_norm else 0
+            region_name, reg_code = resolve_region(row.get("region"), code_to_name, name_to_code)
+            count = company_counts.get(region_name, 0) if region_name else 0
             collected_at = row.get("parsed_at") or datetime.utcnow()
             to_insert.append(
                 {
@@ -110,12 +97,19 @@ def main() -> None:
                     "category": row.get("category"),
                     "price_value": row.get("price_value"),
                     "price_currency": row.get("price_currency"),
-                    "region": region_norm,
+                    "region": region_name,
                     "region_code": reg_code,
                     "companies_count_region": count,
                     "collected_at": collected_at.isoformat() if hasattr(collected_at, "isoformat") else str(collected_at),
                 }
             )
+
+        # ensure region is string and not null
+        for r in to_insert:
+            if r["region"] is None:
+                r["region"] = ""
+            else:
+                r["region"] = str(r["region"])
 
         if to_insert:
             db.execute(insert(market_snapshot), to_insert)
