@@ -13,6 +13,7 @@ dependencies = [
   "langchain>=0.3.7",
   "openai>=1.52.2",
   "langchain-openai>=0.2.8",
+  "plotly>=5.24.0",
 ]
 
 [project.optional-dependencies]

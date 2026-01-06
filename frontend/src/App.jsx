@@ -4,6 +4,8 @@ import { Globe2, ChevronsUpDown } from "lucide-react";
 import Dashboard from "./pages/Dashboard.jsx";
 import ReportsPage from "./pages/ReportsPage.jsx";
 import PageLayout from "./components/layout/PageLayout.jsx";
+import PlotSelector from "./bi/PlotSelector.jsx";
+import PlotRenderer from "./bi/PlotRenderer.jsx";
 
 const TEXTS = {
   en: {
@@ -34,6 +36,7 @@ const LANG_OPTIONS = [
 
 function App() {
   const [lang, setLang] = useState("cs");
+  const [selectedPlot, setSelectedPlot] = useState({ plot: "price_by_region" });
   const t = TEXTS[lang];
 
   return (
@@ -88,6 +91,40 @@ function App() {
       <Dashboard lang={lang} />
       <div className="h-px w-full bg-slate-800 my-4"></div>
       <ReportsPage lang={lang} onLangChange={setLang} />
+      <div className="h-px w-full bg-slate-800 my-4"></div>
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold text-slate-50">BI vizualizace</h2>
+        <PlotSelector
+          labels={{
+            plotType: "Typ grafu",
+            metric: "Metrika",
+            metrics: {
+              avg_price: "Průměr",
+              median_price: "Medián",
+              min_price: "Minimum",
+              max_price: "Maximum",
+            },
+            regions: "Regiony",
+            regionsPlaceholder: "Moscow 54",
+            categories: "Kategorie",
+            categoriesPlaceholder: "йогурт масло",
+            category: "Kategorie",
+            categoryPlaceholder: "йогурт",
+            region: "Region",
+            regionPlaceholder: "Moscow",
+            apply: "Načíst graf",
+          }}
+          onChange={(sel) => setSelectedPlot(sel)}
+        />
+        <PlotRenderer
+          selection={selectedPlot}
+          labels={{
+            loading: "Načítám graf...",
+            error: "Chyba",
+            empty: "Vyber graf pro zobrazení.",
+          }}
+        />
+      </div>
     </PageLayout>
   );
 }
