@@ -20,7 +20,7 @@ def _match_region_name(name: Any, target: str) -> bool:
 
 def build_context(req: ReportRequest) -> Dict[str, Any]:
     data = load_analytics()
-    ctx: Dict[str, Any] = {"type": req.type.value, "lang": req.lang}
+    ctx: Dict[str, Any] = {"type": req.type.value, "lang": req.lang, "currency": "RUB"}
 
     if req.type == ReportType.MARKET_OVERVIEW:
         ctx["overview"] = data.get("overview")
