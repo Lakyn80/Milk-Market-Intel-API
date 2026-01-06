@@ -9,51 +9,18 @@ import csv
 import sys
 from pathlib import Path
 
-import httpx
-
-API_URL = "https://market.yandex.ru/api/geo/regions"
 OUT_PATH = Path(__file__).resolve().parents[1] / "data" / "region_lr_map.csv"
 
 
-def fetch_regions() -> list[dict]:
-    with httpx.Client(timeout=15.0) as client:
-        resp = client.get(API_URL)
-        resp.raise_for_status()
-        data = resp.json()
-        # Expecting a list of regions with id/lr and name
-        return data
-
-
 def build_map():
-    regions = fetch_regions()
-    seen = set()
-    rows = []
-    for item in regions:
-        code = item.get("id") or item.get("lr")
-        name = item.get("name")
-        if code is None or name is None:
-            continue
-        try:
-            code_int = int(code)
-        except ValueError:
-            continue
-        key = (code_int, name)
-        if key in seen:
-            continue
-        seen.add(key)
-        rows.append({"lr_code": code_int, "region_name": str(name).strip()})
-
-    rows = sorted(rows, key=lambda x: x["lr_code"])
-    OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with OUT_PATH.open("w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["lr_code", "region_name"])
-        writer.writeheader()
-        writer.writerows(rows)
-
-    print(f"Regions fetched: {len(rows)}")
-    print("First 10 rows:")
-    for r in rows[:10]:
-        print(r)
+    """
+    No automatic source available in this environment.
+    Provide region_lr_map.csv manually from official Yandex geo export.
+    """
+    raise RuntimeError(
+        "No deterministic lr_code source available. Please provide backend/data/region_lr_map.csv "
+        "exported from official Yandex Market geo regions. No hardcoded mapping is allowed."
+    )
 
 
 if __name__ == "__main__":
