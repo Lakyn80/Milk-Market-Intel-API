@@ -64,19 +64,20 @@ def build_region_maps(db):
 
 def resolve_region(value, code_to_name, name_to_code):
     if value is None:
-        return "UNKNOWN", None
+        return None, None
     raw = str(value).strip()
     if not raw:
-        return "UNKNOWN", None
+        return None, None
     # numeric code
     if raw.isdigit():
         if raw in code_to_name:
             name = code_to_name[raw]
             return name, raw
-        return "UNKNOWN", raw
+        # keep numeric as both name and code to avoid UNKNOWN
+        return raw, raw
     norm = normalize_name(raw)
     if not norm:
-        return "UNKNOWN", None
+        return None, None
     code = name_to_code.get(norm.lower())
     return norm, code
 
@@ -117,7 +118,7 @@ def main() -> None:
         unresolved_numeric = 0
         for row in rows:
             region_name, reg_code = resolve_region(row.get("region"), code_to_name, name_to_code)
-            if region_name == "UNKNOWN" and reg_code and reg_code.isdigit():
+            if reg_code and reg_code.isdigit() and reg_code not in code_to_name:
                 unresolved_numeric += 1
             count = company_counts.get(region_name, 0) if region_name else 0
             collected_at = row.get("parsed_at") or datetime.utcnow()
@@ -154,7 +155,7 @@ def main() -> None:
 
     print(f"market_snapshot rows: {total}")
     if unresolved_numeric:
-        print(f"WARNING: {unresolved_numeric} rows kept numeric region_code with region_name='UNKNOWN' (region_lr_map.csv missing or incomplete)")
+        print(f"NOTICE: {unresolved_numeric} rows kept numeric region_code without external mapping (region_lr_map.csv missing/incomplete)")
     print("Top 10 regions by product count:")
     for reg, cnt in top_regions:
         print(f"{reg}: {cnt}")
