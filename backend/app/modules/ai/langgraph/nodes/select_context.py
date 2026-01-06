@@ -13,14 +13,18 @@ def select_context(state: GraphState) -> GraphState:
         question = state.get("question", "").lower()
         matched = [
             r for r in regions
-            if isinstance(r, dict) and r.get("region") and r.get("region").lower() in question
+            if isinstance(r, dict)
+            and isinstance(r.get("region"), str)
+            and r.get("region").lower() in question
         ]
         context["regions"] = matched[:2]
     elif intent == "region_overview":
         question = state.get("question", "").lower()
         matched = [
             r for r in regions
-            if isinstance(r, dict) and r.get("region") and r.get("region").lower() in question
+            if isinstance(r, dict)
+            and isinstance(r.get("region"), str)
+            and r.get("region").lower() in question
         ]
         context["regions"] = matched[:1]
     else:
