@@ -1,6 +1,9 @@
 import re
+import csv
+from pathlib import Path
 from collections import defaultdict
 from datetime import datetime
+import logging
 
 from sqlalchemy import delete, insert, select, join, func
 
@@ -18,37 +21,62 @@ def normalize_name(value) -> str | None:
     s = str(value).strip()
     if not s:
         return None
-    s = re.sub(r"\\s+", " ", s)
+    s = re.sub(r"\s+", " ", s)
     return s
 
 
-def build_region_maps(db):
+def load_lr_map():
+    """Load lr_code -> region_name map from CSV if present."""
+    path = Path(__file__).resolve().parents[3] / "data" / "region_lr_map.csv"
+    if not path.exists():
+        logging.getLogger(__name__).info(
+            "region_lr_map.csv not found; numeric region codes will remain as region_code and region_name set to UNKNOWN"
+        )
+        return {}
     code_to_name = {}
-    name_to_code = {}
-    stmt = select(Region.id, Region.name)
-    for region_id, name in db.execute(stmt):
+    with path.open(encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            code = str(row.get("lr_code")).strip()
+            name = normalize_name(row.get("region_name"))
+            if not code or not code.isdigit() or not name:
+                continue
+            code_to_name[code] = name
+    # NOTE:
+    # region_lr_map.csv is generated from official Yandex Market geo source.
+    # This file is the ONLY allowed source for lr_code -> region_name mapping.
+    return code_to_name
+
+
+def build_region_maps(db):
+    code_to_name = load_lr_map()
+    name_to_code = {v.lower(): k for k, v in code_to_name.items()}
+
+    # keep region names from Region table for completeness (name lookup only)
+    stmt = select(Region.name)
+    for (name,) in db.execute(stmt):
         norm_name = normalize_name(name)
-        if not norm_name:
-            continue
-        code = str(region_id)
-        code_to_name[code] = norm_name
-        name_to_code[norm_name.lower()] = code
+        if norm_name and norm_name.lower() not in name_to_code:
+            # no code, but allows name lookup
+            name_to_code[norm_name.lower()] = None
     return code_to_name, name_to_code
 
 
 def resolve_region(value, code_to_name, name_to_code):
     if value is None:
-        return None, None
+        return "UNKNOWN", None
     raw = str(value).strip()
     if not raw:
-        return None, None
+        return "UNKNOWN", None
     # numeric code
-    if raw.isdigit() and raw in code_to_name:
-        name = code_to_name[raw]
-        return name, raw
+    if raw.isdigit():
+        if raw in code_to_name:
+            name = code_to_name[raw]
+            return name, raw
+        return "UNKNOWN", raw
     norm = normalize_name(raw)
     if not norm:
-        return None, None
+        return "UNKNOWN", None
     code = name_to_code.get(norm.lower())
     return norm, code
 
@@ -86,8 +114,11 @@ def main() -> None:
         rows = db.execute(stmt).mappings().all()
 
         to_insert = []
+        unresolved_numeric = 0
         for row in rows:
             region_name, reg_code = resolve_region(row.get("region"), code_to_name, name_to_code)
+            if region_name == "UNKNOWN" and reg_code and reg_code.isdigit():
+                unresolved_numeric += 1
             count = company_counts.get(region_name, 0) if region_name else 0
             collected_at = row.get("parsed_at") or datetime.utcnow()
             to_insert.append(
@@ -106,10 +137,7 @@ def main() -> None:
 
         # ensure region is string and not null
         for r in to_insert:
-            if r["region"] is None:
-                r["region"] = ""
-            else:
-                r["region"] = str(r["region"])
+            r["region"] = str(r["region"] or "")
 
         if to_insert:
             db.execute(insert(market_snapshot), to_insert)
@@ -125,6 +153,8 @@ def main() -> None:
         top_regions = sorted(region_counts.items(), key=lambda x: x[1], reverse=True)[:10]
 
     print(f"market_snapshot rows: {total}")
+    if unresolved_numeric:
+        print(f"WARNING: {unresolved_numeric} rows kept numeric region_code with region_name='UNKNOWN' (region_lr_map.csv missing or incomplete)")
     print("Top 10 regions by product count:")
     for reg, cnt in top_regions:
         print(f"{reg}: {cnt}")
