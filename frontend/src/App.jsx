@@ -2,6 +2,7 @@ import { Fragment, useState } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { Globe2, ChevronsUpDown } from "lucide-react";
 import Dashboard from "./pages/Dashboard.jsx";
+import ReportsPage from "./pages/ReportsPage.jsx";
 import PageLayout from "./components/layout/PageLayout.jsx";
 
 const TEXTS = {
@@ -85,6 +86,8 @@ function App() {
         </div>
       </div>
       <Dashboard lang={lang} />
+      <div className="h-px w-full bg-slate-800 my-4"></div>
+      <ReportsPage lang={lang} onLangChange={setLang} />
     </PageLayout>
   );
 }
