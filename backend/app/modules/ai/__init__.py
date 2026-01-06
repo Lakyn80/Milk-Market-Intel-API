@@ -1,1 +1,1 @@
-"""LangChain MVP module (read-only interpretation)."""
+"""LangChain and LangGraph MVP modules (read-only interpretation)."""
