@@ -1,21 +1,35 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 import logging
 
 from app.modules.monitoring.health import router as health_router
 from app.modules.companies.api import router as companies_router
 
-# AI router is optional; skip if langchain deps are not installed (e.g., CI without extras)
+# AI router is optional; provide a stub if deps are missing to avoid 404s.
 try:
     from app.modules.ai.api.ai_router import router as ai_router
 except ImportError:
-    ai_router = None
     logging.getLogger(__name__).warning("AI router disabled: langchain/openai not installed")
+    ai_router = APIRouter()
+
+    @ai_router.post("/ai/ask")
+    def ai_disabled() -> None:
+        raise HTTPException(
+            status_code=503,
+            detail="AI router disabled: langchain/openai not installed",
+        )
 
 try:
     from app.modules.ai.api.report_router import router as report_router
 except ImportError:
-    report_router = None
     logging.getLogger(__name__).warning("Report router disabled: langchain/openai not installed")
+    report_router = APIRouter()
+
+    @report_router.post("/reports/build")
+    def reports_disabled() -> None:
+        raise HTTPException(
+            status_code=503,
+            detail="Report router disabled: langchain/openai not installed",
+        )
 
 api_router = APIRouter()
 

@@ -7,37 +7,132 @@ import PageLayout from "./components/layout/PageLayout.jsx";
 import PlotSelector from "./bi/PlotSelector.jsx";
 import PlotRenderer from "./bi/PlotRenderer.jsx";
 
-const TEXTS = {
-  en: {
-    title: "Milk Market Intel — Dashboard",
-    subtitle:
-      "Read-only view of existing analytics CSV/JSON outputs (no calculations in UI).",
-    language: "Language",
-  },
+const LANG_CODES = ["cs", "en", "ru"];
+
+const LANGUAGE_LABELS = {
   cs: {
-    title: "Milk Market Intel — Dashboard",
-    subtitle:
-      "Jen čtení existujících CSV/JSON výstupů z analytiky (žádné výpočty v UI).",
-    language: "Jazyk",
+    cs: "Čeština",
+    en: "Angličtina",
+    ru: "Ruština",
+  },
+  en: {
+    cs: "Czech",
+    en: "English",
+    ru: "Russian",
   },
   ru: {
+    cs: "Чешский",
+    en: "Английский",
+    ru: "Русский",
+  },
+};
+
+const TEXTS = {
+  en: {
+    badge: "B2B Analytics Dashboard",
+    title: "Milk Market Intel — Dashboard",
+    subtitle:
+      "Read-only view of precomputed analytics CSV/JSON outputs (no calculations in UI).",
+    language: "Language",
+    biTitle: "BI visualizations",
+    plotLabels: {
+      plotType: "Plot type",
+      metric: "Metric",
+      metrics: {
+        avg_price: "Average",
+        median_price: "Median",
+        min_price: "Minimum",
+        max_price: "Maximum",
+      },
+      regions: "Regions",
+      regionsPlaceholder: "Moscow 54",
+      categories: "Categories",
+      categoriesPlaceholder: "milk yogurt",
+      category: "Category",
+      categoryPlaceholder: "milk",
+      region: "Region",
+      regionPlaceholder: "Moscow",
+      apply: "Load chart",
+    },
+    plotStatus: {
+      loading: "Loading chart...",
+      error: "Error",
+      empty: "Select a chart to view.",
+    },
+  },
+  cs: {
+    badge: "B2B analytický přehled",
+    title: "Milk Market Intel — Přehled",
+    subtitle: "Pouze čtení hotových CSV/JSON z analytiky (žádné výpočty v UI).",
+    language: "Jazyk",
+    biTitle: "BI vizualizace",
+    plotLabels: {
+      plotType: "Typ grafu",
+      metric: "Metrika",
+      metrics: {
+        avg_price: "Průměr",
+        median_price: "Medián",
+        min_price: "Minimum",
+        max_price: "Maximum",
+      },
+      regions: "Regiony",
+      regionsPlaceholder: "Moskva 54",
+      categories: "Kategorie",
+      categoriesPlaceholder: "mléko jogurt",
+      category: "Kategorie",
+      categoryPlaceholder: "mléko",
+      region: "Region",
+      regionPlaceholder: "Moskva",
+      apply: "Načíst graf",
+    },
+    plotStatus: {
+      loading: "Načítám graf...",
+      error: "Chyba",
+      empty: "Vyber graf pro zobrazení.",
+    },
+  },
+  ru: {
+    badge: "B2B аналитическая панель",
     title: "Milk Market Intel — Дашборд",
     subtitle:
       "Только чтение готовых CSV/JSON из аналитики (никаких вычислений в UI).",
     language: "Язык",
+    biTitle: "BI визуализации",
+    plotLabels: {
+      plotType: "Тип графика",
+      metric: "Метрика",
+      metrics: {
+        avg_price: "Среднее",
+        median_price: "Медиана",
+        min_price: "Минимум",
+        max_price: "Максимум",
+      },
+      regions: "Регионы",
+      regionsPlaceholder: "Москва 54",
+      categories: "Категории",
+      categoriesPlaceholder: "молоко йогурт",
+      category: "Категория",
+      categoryPlaceholder: "молоко",
+      region: "Регион",
+      regionPlaceholder: "Москва",
+      apply: "Загрузить график",
+    },
+    plotStatus: {
+      loading: "Загружаю график...",
+      error: "Ошибка",
+      empty: "Выберите график для просмотра.",
+    },
   },
 };
-
-const LANG_OPTIONS = [
-  { code: "cs", label: "Čeština" },
-  { code: "en", label: "English" },
-  { code: "ru", label: "Русский" },
-];
 
 function App() {
   const [lang, setLang] = useState("cs");
   const [selectedPlot, setSelectedPlot] = useState({ plot: "price_by_region" });
-  const t = TEXTS[lang];
+  const t = TEXTS[lang] || TEXTS.en;
+  const languageOptions = LANG_CODES.map((code) => ({
+    code,
+    label: LANGUAGE_LABELS[lang]?.[code] || LANGUAGE_LABELS.en[code] || code.toUpperCase(),
+  }));
 
   return (
     <PageLayout>
@@ -45,7 +140,7 @@ function App() {
         <div>
           <div className="inline-flex items-center gap-2 rounded-full bg-slate-800/60 px-3 py-1 text-xs text-slate-300">
             <Globe2 size={14} />
-            B2B Analytics Dashboard
+            {t.badge}
           </div>
           <h1 className="text-2xl font-bold mt-2 text-slate-50">{t.title}</h1>
           <p className="text-sm text-slate-400">{t.subtitle}</p>
@@ -56,7 +151,7 @@ function App() {
             <div className="relative w-40">
               <Listbox.Button className="relative w-full cursor-default rounded-lg border border-slate-700 bg-slate-900 py-2 pl-3 pr-10 text-left text-sm text-slate-100 shadow-sm hover:border-slate-500">
                 <span className="block truncate">
-                  {LANG_OPTIONS.find((o) => o.code === lang)?.label || lang.toUpperCase()}
+                  {languageOptions.find((o) => o.code === lang)?.label || lang.toUpperCase()}
                 </span>
                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-slate-400">
                   <ChevronsUpDown size={16} />
@@ -69,7 +164,7 @@ function App() {
                 leaveTo="opacity-0"
               >
                 <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-slate-900 py-1 text-sm shadow-lg ring-1 ring-slate-700 ring-opacity-5 focus:outline-none">
-                  {LANG_OPTIONS.map((option) => (
+                  {languageOptions.map((option) => (
                     <Listbox.Option
                       key={option.code}
                       className={({ active }) =>
@@ -88,42 +183,22 @@ function App() {
           </Listbox>
         </div>
       </div>
-      <Dashboard lang={lang} />
+      <Dashboard lang={lang} languageOptions={languageOptions} />
       <div className="h-px w-full bg-slate-800 my-4"></div>
-      <ReportsPage lang={lang} onLangChange={setLang} />
+      <ReportsPage
+        lang={lang}
+        onLangChange={setLang}
+        languageOptions={languageOptions}
+      />
       <div className="h-px w-full bg-slate-800 my-4"></div>
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-slate-50">BI vizualizace</h2>
+        <h2 className="text-xl font-semibold text-slate-50">{t.biTitle}</h2>
         <PlotSelector
-          labels={{
-            plotType: "Typ grafu",
-            metric: "Metrika",
-            metrics: {
-              avg_price: "Průměr",
-              median_price: "Medián",
-              min_price: "Minimum",
-              max_price: "Maximum",
-            },
-            regions: "Regiony",
-            regionsPlaceholder: "Moscow 54",
-            categories: "Kategorie",
-            categoriesPlaceholder: "йогурт масло",
-            category: "Kategorie",
-            categoryPlaceholder: "йогурт",
-            region: "Region",
-            regionPlaceholder: "Moscow",
-            apply: "Načíst graf",
-          }}
+          labels={t.plotLabels}
+          lang={lang}
           onChange={(sel) => setSelectedPlot(sel)}
         />
-        <PlotRenderer
-          selection={selectedPlot}
-          labels={{
-            loading: "Načítám graf...",
-            error: "Chyba",
-            empty: "Vyber graf pro zobrazení.",
-          }}
-        />
+        <PlotRenderer selection={selectedPlot} labels={t.plotStatus} lang={lang} />
       </div>
     </PageLayout>
   );

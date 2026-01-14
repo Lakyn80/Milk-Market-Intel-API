@@ -29,18 +29,22 @@ const LABELS = {
     charts: {
       regions: "Produkty podle regionu",
       categories: "Průměrná cena podle kategorie",
-      distribution: "Distribuce cen (histogram)",
+      distribution: "Rozdělení cen (histogram)",
     },
     exports: {
       title: "Export reportů",
       csv: "Export CSV",
       json: "Export JSON",
+      region: "Regiony",
+      category: "Kategorie",
+      prices: "Ceny",
     },
-    error: "Chyba načítání dat",
+    error: "Načtení dat selhalo",
     ai: {
       title: "AI analýza trhu",
-      subtitle: "Zeptej se na předpočítanou analytiku. Model pouze interpretuje existující data.",
-      placeholder: "např. Které regiony mají nejvíce produktů?",
+      subtitle:
+        "Zeptej se na hotovou analytiku. Model pouze interpretuje již spočítaná data.",
+      placeholder: "např.: Které regiony vedou podle počtu produktů?",
       submit: "Zeptat se AI",
       loading: "Pracuji...",
       error: "Chyba",
@@ -52,7 +56,7 @@ const LABELS = {
       totalProducts: "Products",
       regions: "Regions",
       categories: "Categories",
-      avgPrice: "Avg price",
+      avgPrice: "Average price",
     },
     charts: {
       regions: "Products by region",
@@ -63,12 +67,16 @@ const LABELS = {
       title: "Export reports",
       csv: "Export CSV",
       json: "Export JSON",
+      region: "Region",
+      category: "Category",
+      prices: "Prices",
     },
     error: "Data load failed",
     ai: {
       title: "AI market analysis",
-      subtitle: "Ask a question about the precomputed analytics. The model will only interpret existing data.",
-      placeholder: "e.g., Which regions have the highest product counts?",
+      subtitle:
+        "Ask a question about the precomputed analytics. The model will only interpret existing data.",
+      placeholder: "e.g., Which regions lead by product count?",
       submit: "Ask AI",
       loading: "Working...",
       error: "Error",
@@ -91,27 +99,31 @@ const LABELS = {
       title: "Экспорт отчётов",
       csv: "Экспорт CSV",
       json: "Экспорт JSON",
+      region: "Регионы",
+      category: "Категории",
+      prices: "Цены",
     },
-    error: "Ошибка загрузки данных",
+    error: "Не удалось загрузить данные",
     ai: {
       title: "AI анализ рынка",
-      subtitle: "Задай вопрос по готовой аналитике. Модель только интерпретирует уже посчитанные данные.",
+      subtitle:
+        "Задай вопрос по готовой аналитике. Модель только интерпретирует уже посчитанные данные.",
       placeholder: "например: Какие регионы лидируют по числу товаров?",
       submit: "Спросить ИИ",
-      loading: "Думаю...",
+      loading: "Работаю...",
       error: "Ошибка",
     },
   },
 };
 
-function Dashboard({ lang }) {
+function Dashboard({ lang, languageOptions }) {
   const [overview, setOverview] = useState(null);
   const [regionData, setRegionData] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
   const [distributionData, setDistributionData] = useState([]);
   const [error, setError] = useState(null);
 
-  const labels = useMemo(() => LABELS[lang] ?? LABELS.cs, [lang]);
+  const labels = useMemo(() => LABELS[lang] ?? LABELS.en, [lang]);
 
   useEffect(() => {
     async function loadAll() {
@@ -170,19 +182,19 @@ function Dashboard({ lang }) {
             className="rounded border border-slate-700 px-3 py-2 text-sm text-slate-100 hover:border-slate-500"
             onClick={() => exportCsv(PATHS.region, "region_summary.csv")}
           >
-            {labels.exports.csv} (Region)
+            {labels.exports.csv} ({labels.exports.region})
           </button>
           <button
             className="rounded border border-slate-700 px-3 py-2 text-sm text-slate-100 hover:border-slate-500"
             onClick={() => exportCsv(PATHS.category, "category_summary.csv")}
           >
-            {labels.exports.csv} (Category)
+            {labels.exports.csv} ({labels.exports.category})
           </button>
           <button
             className="rounded border border-slate-700 px-3 py-2 text-sm text-slate-100 hover:border-slate-500"
             onClick={() => exportCsv(PATHS.distribution, "price_distribution.csv")}
           >
-            {labels.exports.csv} (Prices)
+            {labels.exports.csv} ({labels.exports.prices})
           </button>
           <button
             className="rounded border border-slate-700 px-3 py-2 text-sm text-slate-100 hover:border-slate-500"
@@ -193,7 +205,11 @@ function Dashboard({ lang }) {
         </div>
       </div>
 
-      <AiAskBox labels={labels.ai} />
+      <AiAskBox
+        labels={labels.ai}
+        defaultLang={lang}
+        languageOptions={languageOptions}
+      />
     </div>
   );
 }

@@ -6,10 +6,24 @@ const REPORT_TYPES = [
   { value: "category_deep_dive", label: "Category deep dive" },
 ];
 
-function ReportForm({ labels, lang, onLangChange, onSubmit, loading }) {
+const DEFAULT_LANG_OPTIONS = [
+  { code: "cs", label: "Čeština" },
+  { code: "en", label: "English" },
+  { code: "ru", label: "Русский" },
+];
+
+function ReportForm({
+  labels,
+  lang,
+  languageOptions,
+  onLangChange,
+  onSubmit,
+  loading,
+}) {
   const [type, setType] = useState("market_overview");
   const [regions, setRegions] = useState("");
   const [category, setCategory] = useState("");
+  const options = languageOptions?.length ? languageOptions : DEFAULT_LANG_OPTIONS;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -50,9 +64,11 @@ function ReportForm({ labels, lang, onLangChange, onSubmit, loading }) {
             value={lang}
             onChange={(e) => onLangChange(e.target.value)}
           >
-            <option value="cs">Čeština</option>
-            <option value="en">English</option>
-            <option value="ru">Русский</option>
+            {options.map((option) => (
+              <option key={option.code} value={option.code}>
+                {option.label}
+              </option>
+            ))}
           </select>
         </div>
       </div>

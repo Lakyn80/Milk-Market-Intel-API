@@ -1,13 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const API_URL = "/api/v1/ai/ask";
 
-function AiAskBox({ labels }) {
+const DEFAULT_LANG_OPTIONS = [
+  { code: "cs", label: "Čeština" },
+  { code: "en", label: "English" },
+  { code: "ru", label: "Русский" },
+];
+
+function AiAskBox({ labels, defaultLang = "cs", languageOptions }) {
   const [question, setQuestion] = useState("");
-  const [lang, setLang] = useState("cs");
+  const [lang, setLang] = useState(defaultLang);
   const [answer, setAnswer] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const options = languageOptions?.length ? languageOptions : DEFAULT_LANG_OPTIONS;
+
+  useEffect(() => {
+    setLang(defaultLang);
+  }, [defaultLang]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,9 +61,11 @@ function AiAskBox({ labels }) {
             value={lang}
             onChange={(e) => setLang(e.target.value)}
           >
-            <option value="cs">Čeština</option>
-            <option value="en">English</option>
-            <option value="ru">Русский</option>
+            {options.map((option) => (
+              <option key={option.code} value={option.code}>
+                {option.label}
+              </option>
+            ))}
           </select>
           <button
             type="submit"

@@ -6,8 +6,8 @@ import ReportActions from "../components/ReportActions.jsx";
 
 const LABELS = {
   cs: {
-    title: "Report builder",
-    subtitle: "Generuj textové reporty nad předpočítanými daty (LLM nic nepočítá).",
+    title: "Konfigurátor reportů",
+    subtitle: "Generujte textové reporty z hotových dat (LLM nic nepočítá).",
     form: {
       reportType: "Typ reportu",
       types: {
@@ -16,10 +16,10 @@ const LABELS = {
         category_deep_dive: "Detail kategorie",
       },
       language: "Jazyk",
-      regions: "Regiony (čárkou nebo mezerou)",
-      regionsPlaceholder: "Moscow 54",
+      regions: "Regiony (oddělené čárkou nebo mezerou)",
+      regionsPlaceholder: "Moskva 54",
       category: "Kategorie",
-      categoryPlaceholder: "йогурт",
+      categoryPlaceholder: "smetana",
       submit: "Vytvořit report",
       loading: "Pracuji...",
     },
@@ -49,7 +49,7 @@ const LABELS = {
       regions: "Regions (comma or space separated)",
       regionsPlaceholder: "Moscow 54",
       category: "Category",
-      categoryPlaceholder: "йогурт",
+      categoryPlaceholder: "sour cream",
       submit: "Build report",
       loading: "Working...",
     },
@@ -73,15 +73,15 @@ const LABELS = {
       types: {
         market_overview: "Обзор рынка",
         region_comparison: "Сравнение регионов",
-        category_deep_dive: "Категория подробно",
+        category_deep_dive: "Детальный разбор категории",
       },
       language: "Язык",
       regions: "Регионы (через запятую или пробел)",
-      regionsPlaceholder: "Moscow 54",
+      regionsPlaceholder: "Москва 54",
       category: "Категория",
-      categoryPlaceholder: "йогурт",
+      categoryPlaceholder: "сметана",
       submit: "Собрать отчёт",
-      loading: "Думаю...",
+      loading: "Работаю...",
     },
     viewer: {
       title: "Отчёт",
@@ -97,7 +97,7 @@ const LABELS = {
   },
 };
 
-function ReportsPage({ lang, onLangChange }) {
+function ReportsPage({ lang, onLangChange, languageOptions }) {
   const t = LABELS[lang] || LABELS.en;
   const [reportText, setReportText] = useState("");
   const [meta, setMeta] = useState({});
@@ -130,6 +130,7 @@ function ReportsPage({ lang, onLangChange }) {
       <ReportForm
         labels={t.form}
         lang={lang}
+        languageOptions={languageOptions}
         onLangChange={onLangChange}
         onSubmit={handleSubmit}
         loading={loading}
