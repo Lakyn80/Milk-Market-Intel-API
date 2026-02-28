@@ -109,7 +109,5 @@ Planned extensions:
 
 ---
 
-## Author
-
-Developed and maintained by Lukas Krumpach  
-Backend / Data-focused Python developer
+## License
+MIT License © 2026 Lukiora
